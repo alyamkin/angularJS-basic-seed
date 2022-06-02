@@ -9,6 +9,13 @@
   </head>
   <body>
     <div class="todo" ng-controller="TodoController as todo">
+      <form class="todo__form" ng-submit="todo.addNewTodo();">
+        <input
+          type="text"
+          placeholder="Add new todo!"
+          ng-model="todo.newTodo"
+        />
+      </form>
       <ul class="todo__list">
         <li ng-repeat="item in todo.list">
           <input
@@ -17,7 +24,9 @@
             ng-model="item.completed"
           />
           <label class="toggle" for="todo-{{ $index}}"></label>
-          <p>{{item.title}}</p>
+          <p ng-dblclick="showEditField = true" ng-hide="showEditField">{{item.title}}</p>
+          <input type="text" ng-model="item.title" ng-show="showEditField" ng-blur="showEditField = false">
+          <a href="" ng-click="todo.removeTodo(item, $index);">&#215</a>
         </li>
       </ul>
     </div>
