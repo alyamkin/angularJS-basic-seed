@@ -1,6 +1,10 @@
 function TodoController() {
   this.newTodo = "";
 
+  this.getRemaining = function () {
+    return this.list.filter((item) => !item.completed);
+  };
+
   this.removeTodo = function (item, index) {
     this.list.splice(index, 1);
   };
