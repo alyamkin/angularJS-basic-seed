@@ -1,37 +1,54 @@
-function TodoController() {
-  this.newTodo = "";
+function TodoController(HttpTodoService) {
+  ctrl = this;
+  ctrl.list = [];
+  ctrl.newTodo = "";
 
-  this.getRemaining = function () {
-    return this.list.filter((item) => !item.completed);
+  ctrl.toggleState = function (item) {
+    HttpTodoService.update(item).then(
+      function () {},
+      function () {
+        item.completed = !item.completed;
+      }
+    );
   };
 
-  this.removeTodo = function (item, index) {
-    this.list.splice(index, 1);
+  ctrl.updateTodo = function (item, index) {
+    HttpTodoService.update(item).then(function (response) {});
   };
 
-  this.addNewTodo = function () {
-    this.list.unshift({
-      title: this.newTodo,
-      completed: false,
+  function getAllTodos() {
+    HttpTodoService.retrieve().then(function (response) {
+      ctrl.list = response.splice(0, 10);
     });
+  }
 
-    this.newTodo = "";
+  ctrl.getRemaining = function () {
+    return ctrl.list.filter((item) => !item.completed);
   };
 
-  this.list = [
-    {
-      title: "First todo item!",
-      completed: true,
-    },
-    {
-      title: "Second todo item!",
+  ctrl.removeTodo = function (item, index) {
+    HttpTodoService.remove(item).then(function (response) {
+      ctrl.list.splice(index, 1);
+    });
+  };
+
+  ctrl.addNewTodo = function () {
+    if (!ctrl.newTodo) {
+      return;
+    }
+
+    let newTodo = {
+      title: ctrl.newTodo,
       completed: false,
-    },
-    {
-      title: "Third todo item!",
-      completed: false,
-    },
-  ];
+    };
+
+    HttpTodoService.create(newTodo).then(function (response) {
+      ctrl.list.unshift(response.data);
+      ctrl.newTodo = "";
+    });
+  };
+
+  getAllTodos();
 }
 
 angular.module("app").controller("TodoController", TodoController);
